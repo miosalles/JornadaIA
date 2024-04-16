@@ -1,4 +1,4 @@
-//Função para número aleatório
+// Função para número aleatório
 function randomRange(min, max) {
     return Math.random() * (max - min) + min;
 }
@@ -14,76 +14,77 @@ class Neuron {
         this.weightList = new Array(inputs)
             .fill()
             .map(() => randomRange(-1, 1));
-    }
-};
-    g(signalList = []); {
+    };
+
+    g(signalList = []) {
         let u = 0;
 
         for (let i = 0; i < this.weightList.length; i++) {
-            u += signalList[i] * this.weightList[i]
+            u += signalList[i] * this.weightList[i];
         }
 
-        if (Math.tanh(u) > this.bias) return 1; //Se retornar 1, está ativado o neurônio.
-        else return 0; //Neurônio desativado.
-    };
+        if (Math.tanh(u) > this.bias) return 1; // Se retornar 1, está ativado o neurônio.
+        else return 0; // Neurônio desativado.
+    }
 
-    mutate(rate = 1); {
+    mutate(rate = 0.2) {
         this.weightList = this.weightList.map((w) => {
-            return lerp(w, randomRange(-1, 1), rate)
+            return lerp(w, randomRange(-1, 1), rate);
         });
 
-        this.bias = lerp(this.bias, randomRange(-1, 1), range)
-    }
-
-    class RNA{
-        constructor(inputCount=1, levelList = []){
-            this.score = 0;
-
-            this.levelList = levelList.map((l, i) =>{
-                const inputSize = i === 0 ? inputCount : levelList[i - 1]
-
-                return new Array(l).fill().map(() => new Neuron(inputSize));
-            });
-        }
-
-        compute(list = []){
-            for(let i = 0; i < this.levelList.length; i++){
-                const tempList = []
-
-                for (const neuron of this.levelList[i]){
-                    if(list.length !== neuron.weightList.length) throw new Error("Entrad inválida");
-                    tempList.push(neuron.g(list))
-                }
-                list = tempList;
-            }
-            return list;
-        }
-    }
-
-mutate(rate = 1); {
-    for (const level of this.levelList) {
-        for (const neuron of level) neuron.mutate(rate)
+        this.bias = lerp(this.bias, randomRange(-1, 1), rate);
     }
 }
 
-load(rna); {
-    if(!rna) return;
-    try{
-        this.levelList = rna.map((neuronList) => {
-            return neuronList.map((neuron) =>{
-                const n = new Neuron();
-                n.bias = neuron
-                n.weightList = neuron.weightList;
+class RNA {
+    constructor(inputCount = 1, levelList = []) {
+        this.score = 0;
 
-                return;
-            })
-        })
+        this.levelList = levelList.map((l, i) => {
+            const inputSize = i === 0 ? inputCount : levelList[i - 1];
 
-    } catch (e){
-        return;
+            return new Array(l).fill().map(() => new Neuron(inputSize));
+        });
     }
 
-    save(); {
+    compute(list = []) {
+        for (let i = 0; i < this.levelList.length; i++) {
+            const tempList = [];
+
+            for (const neuron of this.levelList[i]) {
+                if (list.length !== neuron.weightList.length)
+                throw new Error("Entrada inválida");
+                tempList.push(neuron.g(list));
+            }
+            list = tempList;
+        }
+        return list;
+    }
+
+    mutate(rate = 1) {
+        for (const level of this.levelList) {
+            for (const neuron of level) neuron.mutate(rate);
+        }
+    }
+
+    load(rna) {
+        if (!rna) return;
+        try {
+            this.levelList = rna.map((neuronList) => {
+                return neuronList.map((neuron) => {
+                    const n = new Neuron();
+                    n.bias = neuron.bias;
+                    n.weightList = neuron.weightList;
+
+                    return n;
+                });
+            });
+        } catch (e) {
+            return;
+        }
+    }
+
+    save() {
         return this.levelList;
     }
 }

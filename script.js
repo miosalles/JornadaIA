@@ -2,27 +2,27 @@ import utils from './utils.js'
 import RNA from './RNA.js'
 import controls from './controls.js'
 
-const SAMPLES = 20
+const SAMPLES = 2;
 const game = Runner.instance_;
-let dinoList = []
-let dinoIndex = 0
+let dinoList = [];
+let dinoIndex = 0;
 
 let bestScore = 0;
 let bestRNA = null;
 
-function fillDinoList (){
+function fillDinoList () {
     for (let i = 0; i < SAMPLES; i++){
-        dinoList[i] = new RNA(3, [10, 10, 2])
-        dinoList[i].load(bestRNA)
-        if(i > 0) dinoList[i].mutate(0.5)
+        dinoList[i] = new RNA(3, [10, 10, 2]);
+        dinoList[i].load(bestRNA);
+        if(i > 0) dinoList[i].mutate(0.5);
     }
-    console.log('Lista de dinossauros criada!')
+    console.log('Lista de dinossauros criada!');
 }
 
 setTimeout(() => {
-    fillDinoList()
-    controls.dispatch('jump')
-}, 1000)
+    fillDinoList();
+    controls.dispatch('jump');
+}, 1000);
 
 setInterval(() => {
     if(!game.activated) return
@@ -31,9 +31,9 @@ setInterval(() => {
 
     if (game.crashed){
         if (dino.score > bestScore){
-            bestScore = dino.score
-            bestRNA = dino.save()
-            console.log('Melhor pontuação:', bestScore)
+            bestScore = dino.score;
+            bestRNA = dino.save();
+            console.log('Melhor pontuação:', bestScore);
        }
        dinoIndex++;
 
@@ -42,11 +42,11 @@ setInterval(() => {
         dinoIndex = 0;
         bestScore = 0;
     }
-    game.restart()
+    game.restart();
   }
 
   const{tRex, horizon, currentSpeed, distanceRan,dimensions} = game
-  dino.score = distanceRan - 2000
+  dino.score = distanceRan - 2000;
 
   const player = {
     x: tRex.xPos,
@@ -57,26 +57,26 @@ setInterval(() => {
   const [obstacle] = horizon.obstacles
   .map((obstacle) => {
     return {
-        x: obstacle.xPos,
-        y: obstacle.yPos,
+      x: obstacle.xPos,
+      y: obstacle.yPos,
     }
   })
   .filter((obstacle) => obstacle.x > player.x)
 
   if(obstacle){
     const distance = 1 - (utils.getDistance(player, obstacle) / dimensions.WIDTH);
-    const speed = player.speed / 6
-    const height = Math.tanh(105 - obstacle.y)
+    const speed = player.speed / 6;
+    const height = Math.tanh(105 - obstacle.y);
 
-    const [jump, crouch] = dino.compute([
+    const [jump, crounch] = dino.compute([
         distance,
         speed,
         height,
     ]);
 
-    if (jump === crouch) return
-    if (jump) controls.dispatch('jump') //O dinossauro irá pular se a condição for verdadeira
-    if (crouch) controls.dispatch('crouch')
+    if (jump === crounch) return;
+    if (jump) controls.dispatch('jump'); //O dinossauro irá pular se a condição for verdadeira
+    if (crounch) controls.dispatch ('crounch');
   }
 }, 100);
 
